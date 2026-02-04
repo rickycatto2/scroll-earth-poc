@@ -22,23 +22,27 @@ function setupScroll() {
   duration = video.duration || 1;
 
   // Pin the scene & scrub video by scroll position.
-  ScrollTrigger.create({
-    trigger: "#scene",
-    start: "top top",
-    end: "+=3000",      // adjust "scroll length" of the scrub
-    scrub: true,
-    pin: true,
-    anticipatePin: 1,
-    onUpdate: (self) => {
-      const t = duration * self.progress;
-      // Avoid setting beyond duration
-      video.currentTime = Math.min(duration - 0.05, Math.max(0, t));
-    },
-    onLeave: () => {
-      // ensure video ends when leaving
-      video.currentTime = Math.max(0, duration - 0.05);
-    }
-  });
+ let targetTime = 0;
+
+ScrollTrigger.create({
+  trigger: "#scene",
+  start: "top top",
+  end: "+=3000",
+  scrub: true,
+  pin: true,
+  anticipatePin: 1,
+  onUpdate: self => {
+    if (!video.duration) return;
+    targetTime = video.duration * self.progress;
+  }
+});
+
+// Smoothly ease the video time toward targetTime
+gsap.ticker.add(() => {
+  if (!video.duration) return;
+  video.currentTime += (targetTime - video.currentTime) * 0.15;
+});
+
 
   // Fade graphic in near end of the pinned scroll.
   gsap.to(graphic, {
