@@ -1,0 +1,99 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #0b0d12; color: #e9eef9; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+
+.scene {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.earthVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.graphic {
+  opacity: 0;
+  transform: translateY(12px);
+  text-align: center;
+}
+
+.graphicBox {
+  display: inline-block;
+  padding: 16px 22px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(10px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.graphicCaption {
+  margin-top: 10px;
+  opacity: 0.85;
+  font-size: 14px;
+}
+
+.hint {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.15);
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.horizontal {
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  background: #090b10;
+}
+
+.track {
+  height: 100%;
+  display: flex;
+  width: 200%;
+}
+
+.panel {
+  width: 50%;
+  height: 100%;
+  padding: 64px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+}
+
+.panelA {
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+}
+.panelB {
+  background: linear-gradient(180deg, rgba(120,170,255,0.12), rgba(255,255,255,0.02));
+}
+
+h2 { margin: 0; font-size: 42px; }
+p { margin: 0; max-width: 52ch; line-height: 1.45; font-size: 18px; opacity: 0.92; }
+
+.footer {
+  height: 50vh;
+  display: grid;
+  place-items: center;
+  opacity: 0.7;
+}
