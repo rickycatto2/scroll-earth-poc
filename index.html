@@ -4,12 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Scroll Earth POC</title>
-  <script type="text/javascript" nonce="e5cc50f22db64260a001a05b18c" src="//local.adguard.org?ts=1770340798729&amp;type=content-script&amp;dmn=chatgpt.com&amp;url=https%3A%2F%2Fchatgpt.com%2Fbackend-api%2Festuary%2Fcontent%3Fid%3Dfile_000000006a10720c9879da0608f6f46b%26ts%3D491762%26p%3Dfs%26cid%3D1%26sig%3D873fe283a9de5ad621a0de1c523684d0766e8c945a379d48e9cf609408ea3668%26v%3D0&amp;app=chrome.exe&amp;css=2&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=0"></script><script type="text/javascript" nonce="e5cc50f22db64260a001a05b18c" src="//local.adguard.org?ts=1770340798729&amp;name=AdGuard%20Extra&amp;name=AdGuard%20Popup%20Blocker&amp;type=user-script"></script><link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <!-- Scene: pinned, scroll scrubs video -->
-  <section class="scene" id="scene">
+  <!-- Scene 0: pinned, scroll scrubs video -->
+  <section class="scene sceneVideo" id="scene">
     <video
       id="earthVideo"
       class="earthVideo"
@@ -20,35 +20,183 @@
       <source src="assets/earth.mp4" type="video/mp4" />
     </video>
 
-    <div class="overlay">
-      <div class="graphic" id="endGraphic">
-        <div class="graphicBox">GRAPHIC</div>
-        <div class="graphicCaption">Fade in when video ends</div>
-      </div>
-    </div>
+    <!-- Frame + diagonal line persist on top -->
+    <div class="stageFrame"></div>
+    <div class="stageSlashLine"></div>
+
+    <!-- End-of-video “moment” slash (animated draw-on) -->
+    <svg class="endSlash" id="endSlash" viewBox="0 0 100 100" aria-hidden="true">
+      <path id="endSlashPath" d="M10 90 L90 10"></path>
+    </svg>
 
     <div class="hint">Scroll ↓ (we’re “moving the graphics,” not the page)</div>
   </section>
 
-  <!-- Horizontal scroll section -->
-  <section class="horizontal" id="horizontal">
-    <div class="track" id="track">
-      <div class="panel panelA">
-        <h2>Video ended</h2>
-        <p>Now the whole scene can slide left…</p>
+  <!-- Wipe 1 -->
+  <section class="wipe scene" id="wipe1">
+    <div class="stageFrame"></div>
+    <div class="stageSlashLine"></div>
+
+    <div class="wipeViewport">
+      <div class="card next theme2">
+        <div class="cardInner">
+          <div class="kicker">Juxtaposition 2</div>
+          <h2 class="title">Idea A <span class="slashWord">/</span> Idea B</h2>
+          <div class="cols">
+            <div class="col left">
+              <h3>Left Idea</h3>
+              <p>Short label. (Color block)</p>
+            </div>
+            <div class="col right">
+              <h3>Right Idea</h3>
+              <p>Short label. (Color block)</p>
+            </div>
+          </div>
+          <p class="body">Didactic text block. This is placeholder copy.</p>
+        </div>
       </div>
-      <div class="panel panelB">
-        <h2>…and reveal text</h2>
-        <p>
-          Put your story here. This panel is revealed via horizontal scroll.
-          Add images, bullets, whatever.
-        </p>
+
+      <div class="card current theme1">
+        <div class="cardInner">
+          <div class="kicker">Juxtaposition 1</div>
+          <h2 class="title">Warm <span class="slashWord">/</span> Precise</h2>
+          <div class="cols">
+            <div class="col left">
+              <h3>Hospitality</h3>
+              <p>Human-first, welcoming, generous.</p>
+            </div>
+            <div class="col right">
+              <h3>Rigor</h3>
+              <p>High craft, detail, problem-solving.</p>
+            </div>
+          </div>
+          <p class="body">Didactic text block. Explain the tension/contrast here.</p>
+        </div>
       </div>
+
+      <div class="half halfA"></div>
+      <div class="half halfB"></div>
     </div>
   </section>
 
-  <section class="footer">
-    <p>End of demo.</p>
+  <!-- Wipe 2 -->
+  <section class="wipe scene" id="wipe2">
+    <div class="stageFrame"></div>
+    <div class="stageSlashLine"></div>
+
+    <div class="wipeViewport">
+      <div class="card next theme3">
+        <div class="cardInner">
+          <div class="kicker">Juxtaposition 3</div>
+          <h2 class="title">Idea A <span class="slashWord">/</span> Idea B</h2>
+          <div class="cols">
+            <div class="col left"><h3>Left Idea</h3><p>Placeholder</p></div>
+            <div class="col right"><h3>Right Idea</h3><p>Placeholder</p></div>
+          </div>
+          <p class="body">Didactic text block.</p>
+        </div>
+      </div>
+
+      <div class="card current theme2">
+        <div class="cardInner">
+          <div class="kicker">Juxtaposition 2</div>
+          <h2 class="title">Chaos <span class="slashWord">/</span> Coherence</h2>
+          <div class="cols">
+            <div class="col left"><h3>Wild</h3><p>Artists, sparks, surprises.</p></div>
+            <div class="col right"><h3>Curated</h3><p>One world, one taste, one story.</p></div>
+          </div>
+          <p class="body">Didactic text block.</p>
+        </div>
+      </div>
+
+      <div class="half halfA"></div>
+      <div class="half halfB"></div>
+    </div>
+  </section>
+
+  <!-- Wipe 3 -->
+  <section class="wipe scene" id="wipe3">
+    <div class="stageFrame"></div>
+    <div class="stageSlashLine"></div>
+
+    <div class="wipeViewport">
+      <div class="card next theme4">
+        <div class="cardInner">
+          <div class="kicker">Juxtaposition 4</div>
+          <h2 class="title">Idea A <span class="slashWord">/</span> Idea B</h2>
+          <div class="cols">
+            <div class="col left"><h3>Left Idea</h3><p>Placeholder</p></div>
+            <div class="col right"><h3>Right Idea</h3><p>Placeholder</p></div>
+          </div>
+          <p class="body">Didactic text block.</p>
+        </div>
+      </div>
+
+      <div class="card current theme3">
+        <div class="cardInner">
+          <div class="kicker">Juxtaposition 3</div>
+          <h2 class="title">Loud <span class="slashWord">/</span> Intimate</h2>
+          <div class="cols">
+            <div class="col left"><h3>Spectacle</h3><p>Big energy, big moments.</p></div>
+            <div class="col right"><h3>Care</h3><p>Listening, hospitality, flow.</p></div>
+          </div>
+          <p class="body">Didactic text block.</p>
+        </div>
+      </div>
+
+      <div class="half halfA"></div>
+      <div class="half halfB"></div>
+    </div>
+  </section>
+
+  <!-- Wipe 4 -->
+  <section class="wipe scene" id="wipe4">
+    <div class="stageFrame"></div>
+    <div class="stageSlashLine"></div>
+
+    <div class="wipeViewport">
+      <div class="card next theme5">
+        <div class="cardInner">
+          <div class="kicker">Final</div>
+          <h2 class="title">Landing <span class="slashWord">/</span> CTA</h2>
+          <div class="cols">
+            <div class="col left"><h3>Left</h3><p>Placeholder</p></div>
+            <div class="col right"><h3>Right</h3><p>Placeholder</p></div>
+          </div>
+          <p class="body">Didactic text block.</p>
+        </div>
+      </div>
+
+      <div class="card current theme4">
+        <div class="cardInner">
+          <div class="kicker">Juxtaposition 4</div>
+          <h2 class="title">Mystery <span class="slashWord">/</span> Measure</h2>
+          <div class="cols">
+            <div class="col left"><h3>Magic</h3><p>World-building, wonder.</p></div>
+            <div class="col right"><h3>Method</h3><p>Craft, detail, logistics.</p></div>
+          </div>
+          <p class="body">Didactic text block.</p>
+        </div>
+      </div>
+
+      <div class="half halfA"></div>
+      <div class="half halfB"></div>
+    </div>
+  </section>
+
+  <!-- Final CTA (static, normal scroll) -->
+  <section class="cta scene" id="cta">
+    <div class="stageFrame"></div>
+    <div class="stageSlashLine"></div>
+
+    <div class="ctaInner">
+      <h2>Title for the final page</h2>
+      <p>
+        This is the final static page. Put your summary / invitation here.
+      </p>
+      <a class="btn" href="assets/brief.pdf" target="_blank" rel="noopener">Open Design Brief (PDF)</a>
+      <p class="small">Drop your PDF at <code>assets/brief.pdf</code>.</p>
+    </div>
   </section>
 
   <!-- GSAP + ScrollTrigger (CDN) -->
