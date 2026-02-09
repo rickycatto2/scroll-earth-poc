@@ -1,18 +1,22 @@
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; background: #0b0d12; color: #e9eef9; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
 
-:root {
-  --slash-deg: 47deg;
-  --frame-inset: 18px;
-  --frame-thickness: 10px;
-  --line-thickness: 10px;
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #0b0d12;
+  color: #e9eef9;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* Generic full-viewport scenes */
-.scene { position: relative; height: 100vh; overflow: hidden; }
+/* Scene */
+.scene {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
 
-/* Video */
-.sceneVideo .earthVideo {
+/* Video fills scene */
+.earthVideo {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -20,6 +24,35 @@ html, body { margin: 0; padding: 0; background: #0b0d12; color: #e9eef9; font-fa
   object-fit: cover;
 }
 
+/* Underlay revealed when PNG halves slide away */
+.wipeUnderlay {
+  position: absolute;
+  inset: 0;
+  background: #0a4dff; /* solid blue */
+  opacity: 0;
+  z-index: 5;
+}
+
+/* Overlay that holds the two halves */
+.wipeOverlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0;          /* turned on only during the wipe */
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* Each half image covers the scene */
+.wipeHalf {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+}
+
+/* Scroll hint */
 .hint {
   position: absolute;
   left: 16px;
@@ -30,138 +63,13 @@ html, body { margin: 0; padding: 0; background: #0b0d12; color: #e9eef9; font-fa
   border: 1px solid rgba(255,255,255,0.15);
   font-size: 13px;
   opacity: 0.9;
-  z-index: 70;
+  z-index: 10;
 }
 
-/* Frame + persistent diagonal line */
-.stageFrame {
-  position: absolute;
-  inset: var(--frame-inset);
-  border: var(--frame-thickness) solid rgba(255, 230, 60, 0.92);
-  pointer-events: none;
-  z-index: 50;
-}
-
-.stageSlashLine {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 60;
-}
-.stageSlashLine::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 160vmax;
-  height: var(--line-thickness);
-  background: rgba(255, 230, 60, 0.95);
-  transform: translate(-50%, -50%) rotate(var(--slash-deg));
-  transform-origin: center;
-  border-radius: 999px;
-}
-
-/* End-of-video SVG slash draw-on */
-.endSlash {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: min(70vmin, 900px);
-  height: auto;
-  pointer-events: none;
-  z-index: 80;
-  opacity: 0;
-  transform: scale(0.98);
-}
-.endSlash path {
-  fill: none;
-  stroke: rgba(255, 230, 60, 0.98);
-  stroke-width: 6;
-  stroke-linecap: round;
-}
-
-/* Wipe scenes */
-.wipeViewport {
-  position: absolute;
-  inset: calc(var(--frame-inset) + var(--frame-thickness));
-}
-
-/* Cards */
-.card {
-  position: absolute;
-  inset: 0;
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-/* Two-color diagonal background (A: distinct halves) */
-.theme1 { background: linear-gradient(var(--slash-deg), rgba(255,120,120,0.85) 0 50%, rgba(110,160,255,0.85) 50% 100%); }
-.theme2 { background: linear-gradient(var(--slash-deg), rgba(120,255,190,0.75) 0 50%, rgba(255,200,80,0.80) 50% 100%); }
-.theme3 { background: linear-gradient(var(--slash-deg), rgba(190,120,255,0.75) 0 50%, rgba(120,220,255,0.75) 50% 100%); }
-.theme4 { background: linear-gradient(var(--slash-deg), rgba(255,150,90,0.80) 0 50%, rgba(160,255,120,0.70) 50% 100%); }
-.theme5 { background: linear-gradient(var(--slash-deg), rgba(255,255,255,0.10) 0 50%, rgba(255,255,255,0.04) 50% 100%); }
-
-.cardInner {
-  position: absolute;
-  inset: 0;
-  padding: 56px 64px;
-  display: grid;
-  grid-template-rows: auto auto 1fr auto;
-  gap: 14px;
-  background: rgba(0,0,0,0.22);
-  backdrop-filter: blur(10px);
-}
-
-.kicker { opacity: 0.85; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; }
-.title { margin: 0; font-size: 44px; line-height: 1.05; }
-.slashWord { opacity: 0.85; }
-
-.cols {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 22px;
-  margin-top: 6px;
-}
-.col {
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(0,0,0,0.18);
-}
-.col h3 { margin: 0 0 6px; font-size: 18px; }
-.col p { margin: 0; opacity: 0.92; line-height: 1.35; }
-
-.body { margin: 0; max-width: 70ch; opacity: 0.92; line-height: 1.45; }
-
-/* Halves that slide away */
-.half { position: absolute; inset: 0; will-change: transform; z-index: 20; }
-
-/* CTA */
-.cta {
+/* Optional footer */
+.footer {
+  height: 40vh;
   display: grid;
   place-items: center;
+  opacity: 0.7;
 }
-.ctaInner {
-  position: relative;
-  z-index: 10;
-  width: min(900px, 90vw);
-  padding: 48px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  backdrop-filter: blur(10px);
-}
-.ctaInner h2 { margin: 0 0 10px; font-size: 40px; }
-.ctaInner p { margin: 0 0 14px; line-height: 1.5; opacity: 0.92; }
-.small { opacity: 0.75; font-size: 13px; }
-
-.btn {
-  display: inline-block;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: rgba(255, 230, 60, 0.92);
-  color: #0b0d12;
-  text-decoration: none;
-  font-weight: 700;
-}
-.btn:hover { filter: brightness(1.05); }

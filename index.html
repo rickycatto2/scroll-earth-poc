@@ -8,8 +8,8 @@
 </head>
 <body>
 
-  <!-- Scene 0: pinned, scroll scrubs video -->
-  <section class="scene sceneVideo" id="scene">
+  <!-- Scene: pinned, scroll scrubs video; at the end, PNG halves slide apart -->
+  <section class="scene" id="scene">
     <video
       id="earthVideo"
       class="earthVideo"
@@ -20,183 +20,21 @@
       <source src="assets/earth.mp4" type="video/mp4" />
     </video>
 
-    <!-- Frame + diagonal line persist on top -->
-    <div class="stageFrame"></div>
-    <div class="stageSlashLine"></div>
+    <!-- Underlay revealed during the wipe -->
+    <div class="wipeUnderlay" id="wipeUnderlay"></div>
 
-    <!-- End-of-video “moment” slash (animated draw-on) -->
-    <svg class="endSlash" id="endSlash" viewBox="0 0 100 100" aria-hidden="true">
-      <path id="endSlashPath" d="M10 90 L90 10"></path>
-    </svg>
+    <!-- Overlay: two PNG halves that slide apart -->
+    <div class="wipeOverlay" id="wipeOverlay" aria-hidden="true">
+      <img class="wipeHalf wipeLeft" id="wipeLeft" src="assets/page1_left.png" alt="">
+      <img class="wipeHalf wipeRight" id="wipeRight" src="assets/page1_right.png" alt="">
+    </div>
 
     <div class="hint">Scroll ↓ (we’re “moving the graphics,” not the page)</div>
   </section>
 
-  <!-- Wipe 1 -->
-  <section class="wipe scene" id="wipe1">
-    <div class="stageFrame"></div>
-    <div class="stageSlashLine"></div>
-
-    <div class="wipeViewport">
-      <div class="card next theme2">
-        <div class="cardInner">
-          <div class="kicker">Juxtaposition 2</div>
-          <h2 class="title">Idea A <span class="slashWord">/</span> Idea B</h2>
-          <div class="cols">
-            <div class="col left">
-              <h3>Left Idea</h3>
-              <p>Short label. (Color block)</p>
-            </div>
-            <div class="col right">
-              <h3>Right Idea</h3>
-              <p>Short label. (Color block)</p>
-            </div>
-          </div>
-          <p class="body">Didactic text block. This is placeholder copy.</p>
-        </div>
-      </div>
-
-      <div class="card current theme1">
-        <div class="cardInner">
-          <div class="kicker">Juxtaposition 1</div>
-          <h2 class="title">Warm <span class="slashWord">/</span> Precise</h2>
-          <div class="cols">
-            <div class="col left">
-              <h3>Hospitality</h3>
-              <p>Human-first, welcoming, generous.</p>
-            </div>
-            <div class="col right">
-              <h3>Rigor</h3>
-              <p>High craft, detail, problem-solving.</p>
-            </div>
-          </div>
-          <p class="body">Didactic text block. Explain the tension/contrast here.</p>
-        </div>
-      </div>
-
-      <div class="half halfA"></div>
-      <div class="half halfB"></div>
-    </div>
-  </section>
-
-  <!-- Wipe 2 -->
-  <section class="wipe scene" id="wipe2">
-    <div class="stageFrame"></div>
-    <div class="stageSlashLine"></div>
-
-    <div class="wipeViewport">
-      <div class="card next theme3">
-        <div class="cardInner">
-          <div class="kicker">Juxtaposition 3</div>
-          <h2 class="title">Idea A <span class="slashWord">/</span> Idea B</h2>
-          <div class="cols">
-            <div class="col left"><h3>Left Idea</h3><p>Placeholder</p></div>
-            <div class="col right"><h3>Right Idea</h3><p>Placeholder</p></div>
-          </div>
-          <p class="body">Didactic text block.</p>
-        </div>
-      </div>
-
-      <div class="card current theme2">
-        <div class="cardInner">
-          <div class="kicker">Juxtaposition 2</div>
-          <h2 class="title">Chaos <span class="slashWord">/</span> Coherence</h2>
-          <div class="cols">
-            <div class="col left"><h3>Wild</h3><p>Artists, sparks, surprises.</p></div>
-            <div class="col right"><h3>Curated</h3><p>One world, one taste, one story.</p></div>
-          </div>
-          <p class="body">Didactic text block.</p>
-        </div>
-      </div>
-
-      <div class="half halfA"></div>
-      <div class="half halfB"></div>
-    </div>
-  </section>
-
-  <!-- Wipe 3 -->
-  <section class="wipe scene" id="wipe3">
-    <div class="stageFrame"></div>
-    <div class="stageSlashLine"></div>
-
-    <div class="wipeViewport">
-      <div class="card next theme4">
-        <div class="cardInner">
-          <div class="kicker">Juxtaposition 4</div>
-          <h2 class="title">Idea A <span class="slashWord">/</span> Idea B</h2>
-          <div class="cols">
-            <div class="col left"><h3>Left Idea</h3><p>Placeholder</p></div>
-            <div class="col right"><h3>Right Idea</h3><p>Placeholder</p></div>
-          </div>
-          <p class="body">Didactic text block.</p>
-        </div>
-      </div>
-
-      <div class="card current theme3">
-        <div class="cardInner">
-          <div class="kicker">Juxtaposition 3</div>
-          <h2 class="title">Loud <span class="slashWord">/</span> Intimate</h2>
-          <div class="cols">
-            <div class="col left"><h3>Spectacle</h3><p>Big energy, big moments.</p></div>
-            <div class="col right"><h3>Care</h3><p>Listening, hospitality, flow.</p></div>
-          </div>
-          <p class="body">Didactic text block.</p>
-        </div>
-      </div>
-
-      <div class="half halfA"></div>
-      <div class="half halfB"></div>
-    </div>
-  </section>
-
-  <!-- Wipe 4 -->
-  <section class="wipe scene" id="wipe4">
-    <div class="stageFrame"></div>
-    <div class="stageSlashLine"></div>
-
-    <div class="wipeViewport">
-      <div class="card next theme5">
-        <div class="cardInner">
-          <div class="kicker">Final</div>
-          <h2 class="title">Landing <span class="slashWord">/</span> CTA</h2>
-          <div class="cols">
-            <div class="col left"><h3>Left</h3><p>Placeholder</p></div>
-            <div class="col right"><h3>Right</h3><p>Placeholder</p></div>
-          </div>
-          <p class="body">Didactic text block.</p>
-        </div>
-      </div>
-
-      <div class="card current theme4">
-        <div class="cardInner">
-          <div class="kicker">Juxtaposition 4</div>
-          <h2 class="title">Mystery <span class="slashWord">/</span> Measure</h2>
-          <div class="cols">
-            <div class="col left"><h3>Magic</h3><p>World-building, wonder.</p></div>
-            <div class="col right"><h3>Method</h3><p>Craft, detail, logistics.</p></div>
-          </div>
-          <p class="body">Didactic text block.</p>
-        </div>
-      </div>
-
-      <div class="half halfA"></div>
-      <div class="half halfB"></div>
-    </div>
-  </section>
-
-  <!-- Final CTA (static, normal scroll) -->
-  <section class="cta scene" id="cta">
-    <div class="stageFrame"></div>
-    <div class="stageSlashLine"></div>
-
-    <div class="ctaInner">
-      <h2>Title for the final page</h2>
-      <p>
-        This is the final static page. Put your summary / invitation here.
-      </p>
-      <a class="btn" href="assets/brief.pdf" target="_blank" rel="noopener">Open Design Brief (PDF)</a>
-      <p class="small">Drop your PDF at <code>assets/brief.pdf</code>.</p>
-    </div>
+  <!-- Optional footer just so the page has a clean end -->
+  <section class="footer">
+    <p>End of demo.</p>
   </section>
 
   <!-- GSAP + ScrollTrigger (CDN) -->
