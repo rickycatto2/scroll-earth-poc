@@ -6,6 +6,7 @@ const wipeOverlay = document.getElementById("wipeOverlay");
 const wipeLeft = document.getElementById("wipeLeft");
 const wipeRight = document.getElementById("wipeRight");
 
+let initialized = false;
 let targetTime = 0;
 
 // iOS/Safari quirks: "prime" the video so currentTime changes work reliably.
@@ -15,74 +16,81 @@ async function primeVideo() {
     await video.play();
     video.pause();
   } catch (e) {
-    // Autoplay may be blocked until first user gesture; scroll usually counts.
     console.warn("Video prime blocked (ok for POC):", e);
   }
 }
 
+function clamp01(v) {
+  return Math.max(0, Math.min(1, v));
+}
+
 function setupScroll() {
-  // One pinned scroll region does two phases:
-  // 1) Scrub video (most of scroll)
-  // 2) Hold last frame + slide PNG halves away (end of scroll)
-  const SCROLL_LEN = 4200;     // total scroll distance while pinned (tweak to taste)
-  const VIDEO_PORTION = 0.75;  // 75% scrub, 25% wipe (tweak: 0.7–0.85)
+  if (initialized) return;
+  initialized = true;
 
-  // Timeline used only for the wipe portion (simple and reliable)
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: "#scene",
-      start: "top top",
-      end: `+=${SCROLL_LEN}`,
-      scrub: true,
-      pin: true,
-      anticipatePin: 1
-    }
-  });
+  const SCROLL_LEN = 4200;     // total scroll distance while pinned
+  const VIDEO_PORTION = 0.78;  // first 78% scrubs video; last 22% does the wipe
 
-  // Separate ScrollTrigger to compute targetTime based on scroll progress
-  // (We keep this separate so video smoothing stays clean.)
-  ScrollTrigger.create({
-    trigger: "#scene",
-    start: "top top",
-    end: `+=${SCROLL_LEN}`,
-    scrub: true,
-    onUpdate: (self) => {
-      if (!video.duration) return;
+  // Reset visuals
+  gsap.set([wipeUnderlay, wipeOverlay], { opacity: 0 });
+  gsap.set([wipeLeft, wipeRight], { xPercent: 0 });
+  gsap.set(video, { opacity: 1 });
 
-      const p = self.progress;
-
-      // During first portion, map 0..VIDEO_PORTION => 0..1 of the video
-      const vp = Math.min(1, p / VIDEO_PORTION);
-      targetTime = video.duration * vp;
-
-      // During wipe portion, freeze on last frame
-      if (p >= VIDEO_PORTION) {
-        targetTime = Math.max(0, video.duration - 0.05);
-      }
-    }
-  });
-
-  // Smoothly ease the video time toward targetTime
+  // Smooth video time easing (reduces stepping)
   gsap.ticker.add(() => {
     if (!video.duration) return;
     video.currentTime += (targetTime - video.currentTime) * 0.15;
   });
 
-  // Ensure wipe layers start hidden + reset transforms
-  gsap.set([wipeUnderlay, wipeOverlay], { opacity: 0 });
-  gsap.set([wipeLeft, wipeRight], { xPercent: 0 });
+  // One ScrollTrigger to rule them all
+  ScrollTrigger.create({
+    trigger: "#scene",
+    start: "top top",
+    end: `+=${SCROLL_LEN}`,
+    scrub: true,
+    pin: true,
+    anticipatePin: 1,
 
-  // Wipe begins at VIDEO_PORTION of the timeline
-  // Turn on underlay + overlay instantly
-  tl.to(wipeUnderlay, { opacity: 1, duration: 0.001 }, VIDEO_PORTION);
-  tl.to(wipeOverlay, { opacity: 1, duration: 0.001 }, VIDEO_PORTION);
+    onUpdate: (self) => {
+      if (!video.duration) return;
 
-  // Slide halves apart
-  tl.to(wipeLeft,  { xPercent: -120, ease: "none", duration: 1 }, VIDEO_PORTION);
-  tl.to(wipeRight, { xPercent:  120, ease: "none", duration: 1 }, VIDEO_PORTION);
+      const p = self.progress; // 0..1 across the pinned scroll
 
-  // Optional: dim the video slightly so the blue read is strong
-  tl.to(video, { opacity: 0.15, ease: "none", duration: 0.25 }, VIDEO_PORTION);
+      // 1) Video scrub phase
+      if (p <= VIDEO_PORTION) {
+        const vp = p / VIDEO_PORTION;     // 0..1
+        targetTime = video.duration * vp; // scrub video
+
+        // Ensure wipe is off
+        wipeUnderlay.style.opacity = "0";
+        wipeOverlay.style.opacity = "0";
+        wipeLeft.style.transform = "translateX(0)";
+        wipeRight.style.transform = "translateX(0)";
+        video.style.opacity = "1";
+        return;
+      }
+
+      // 2) Wipe phase (hold last frame + slide PNG halves away)
+      targetTime = Math.max(0, video.duration - 0.05);
+
+      const wp = clamp01((p - VIDEO_PORTION) / (1 - VIDEO_PORTION)); // 0..1
+
+      // Turn wipe layers on as soon as wipe starts
+      wipeUnderlay.style.opacity = "1";
+      wipeOverlay.style.opacity = "1";
+
+      // Slide halves apart
+      // Use translate3d for smoother GPU compositing
+      const leftX = (-120 * wp);
+      const rightX = (120 * wp);
+      wipeLeft.style.transform = `translate3d(${leftX}%, 0, 0)`;
+      wipeRight.style.transform = `translate3d(${rightX}%, 0, 0)`;
+
+      // Optional: dim the video so the blue reads clearly
+      const dim = 1 - (0.85 * wp); // 1 -> 0.15
+      video.style.opacity = String(dim);
+    }
+  });
 }
 
 video.addEventListener("loadedmetadata", async () => {
