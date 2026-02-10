@@ -1,21 +1,27 @@
 gsap.registerPlugin(ScrollTrigger);
 
-const video = document.getElementById("earthVideo");
+const earthVideo = document.getElementById("earthVideo");
+const slashVideo = document.getElementById("slashVideo");
+
 const wipeUnderlay = document.getElementById("wipeUnderlay");
 const wipeOverlay = document.getElementById("wipeOverlay");
 const wipeLeft = document.getElementById("wipeLeft");
 const wipeRight = document.getElementById("wipeRight");
 
-let initialized = false;
-let targetTime = 0;
+const slashStatic = document.getElementById("slashStatic");
 
-// iOS/Safari quirks: "prime" the video so currentTime changes work reliably.
-async function primeVideo() {
+let initialized = false;
+let earthTargetTime = 0;
+let slashTargetTime = 0;
+
+// iOS/Safari: "prime" videos so currentTime seeking works reliably.
+async function prime(videoEl) {
   try {
-    video.muted = true;
-    await video.play();
-    video.pause();
+    videoEl.muted = true;
+    await videoEl.play();
+    videoEl.pause();
   } catch (e) {
+    // Fine for POC: user gesture may be required on some devices.
     console.warn("Video prime blocked (ok for POC):", e);
   }
 }
@@ -24,25 +30,56 @@ function clamp01(v) {
   return Math.max(0, Math.min(1, v));
 }
 
+function allMetadataReady(videos) {
+  return Promise.all(
+    videos.map((v) => new Promise((resolve) => {
+      if (v.readyState >= 1 && v.duration) return resolve();
+      v.addEventListener("loadedmetadata", () => resolve(), { once: true });
+    }))
+  );
+}
+
+function resetVisuals() {
+  // Video visibility
+  gsap.set(earthVideo, { opacity: 1 });
+  gsap.set(slashVideo, { opacity: 0 });
+
+  // Slash static overlay off by default
+  gsap.set(slashStatic, { opacity: 0 });
+
+  // Wipe off by default
+  gsap.set([wipeUnderlay, wipeOverlay], { opacity: 0 });
+  wipeLeft.style.transform = "translate3d(0%,0,0)";
+  wipeRight.style.transform = "translate3d(0%,0,0)";
+}
+
 function setupScroll() {
   if (initialized) return;
   initialized = true;
 
-  const SCROLL_LEN = 4200;     // total scroll distance while pinned
-  const VIDEO_PORTION = 0.78;  // first 78% scrubs video; last 22% does the wipe
+  // Tune this to taste
+  const SCROLL_LEN = 4800;
 
-  // Reset visuals
-  gsap.set([wipeUnderlay, wipeOverlay], { opacity: 0 });
-  gsap.set([wipeLeft, wipeRight], { xPercent: 0 });
-  gsap.set(video, { opacity: 1 });
+  // Explicit phases (sum to 1.0)
+  const PHASE_A = 0.76; // earth scrub
+  const PHASE_B = 0.10; // slash scrub
+  const PHASE_C = 0.14; // split
 
-  // Smooth video time easing (reduces stepping)
+  const A_END = PHASE_A;
+  const B_END = PHASE_A + PHASE_B;
+
+  resetVisuals();
+
+  // Smooth easing for both videos (reduces stepping during scrubbing)
   gsap.ticker.add(() => {
-    if (!video.duration) return;
-    video.currentTime += (targetTime - video.currentTime) * 0.15;
+    if (earthVideo.duration) {
+      earthVideo.currentTime += (earthTargetTime - earthVideo.currentTime) * 0.15;
+    }
+    if (slashVideo.duration) {
+      slashVideo.currentTime += (slashTargetTime - slashVideo.currentTime) * 0.25;
+    }
   });
 
-  // One ScrollTrigger to rule them all
   ScrollTrigger.create({
     trigger: "#scene",
     start: "top top",
@@ -50,58 +87,93 @@ function setupScroll() {
     scrub: true,
     pin: true,
     anticipatePin: 1,
-
     onUpdate: (self) => {
-      if (!video.duration) return;
+      const p = self.progress; // 0..1
 
-      const p = self.progress; // 0..1 across the pinned scroll
+      // Guard: durations might be 0 briefly
+      if (!earthVideo.duration || !slashVideo.duration) return;
 
-      // 1) Video scrub phase
-      if (p <= VIDEO_PORTION) {
-        const vp = p / VIDEO_PORTION;     // 0..1
-        targetTime = video.duration * vp; // scrub video
+      // -----------------------
+      // Phase A: Earth scrub
+      // -----------------------
+      if (p <= A_END) {
+        const vp = clamp01(p / A_END);
 
-        // Ensure wipe is off
+        // Scrub earth 0 -> end
+        earthTargetTime = earthVideo.duration * vp;
+
+        // Keep everything else off
+        slashVideo.style.opacity = "0";
+        slashStatic.style.opacity = "0";
         wipeUnderlay.style.opacity = "0";
         wipeOverlay.style.opacity = "0";
-        wipeLeft.style.transform = "translateX(0)";
-        wipeRight.style.transform = "translateX(0)";
-        video.style.opacity = "1";
+        wipeLeft.style.transform = "translate3d(0%,0,0)";
+        wipeRight.style.transform = "translate3d(0%,0,0)";
+
+        earthVideo.style.opacity = "1";
         return;
       }
 
-      // 2) Wipe phase (hold last frame + slide PNG halves away)
-      targetTime = Math.max(0, video.duration - 0.05);
+      // Freeze earth on last frame for remaining phases
+      earthTargetTime = Math.max(0, earthVideo.duration - 0.05);
+      earthVideo.style.opacity = "1";
 
-      const wp = clamp01((p - VIDEO_PORTION) / (1 - VIDEO_PORTION)); // 0..1
+      // -----------------------
+      // Phase B: Slash video scrub
+      // -----------------------
+      if (p <= B_END) {
+        const sp = clamp01((p - A_END) / (B_END - A_END));
 
-      // Turn wipe layers on as soon as wipe starts
+        // Show slash video, hide static slash (until complete)
+        slashVideo.style.opacity = "1";
+        slashStatic.style.opacity = "0";
+
+        // Keep wipe off
+        wipeUnderlay.style.opacity = "0";
+        wipeOverlay.style.opacity = "0";
+        wipeLeft.style.transform = "translate3d(0%,0,0)";
+        wipeRight.style.transform = "translate3d(0%,0,0)";
+
+        // Scrub slash 0 -> end
+        slashTargetTime = slashVideo.duration * sp;
+        return;
+      }
+
+      // Once Phase B is complete:
+      // - Lock slash video to its end (so it doesn't jump if the browser hiccups)
+      // - Hide slash video
+      // - Show the static transparent slash PNG for all remaining phases
+      slashTargetTime = Math.max(0, slashVideo.duration - 0.05);
+      slashVideo.style.opacity = "0";
+      slashStatic.style.opacity = "1";
+
+      // -----------------------
+      // Phase C: Split wipe
+      // -----------------------
+      const wp = clamp01((p - B_END) / (1 - B_END)); // 0..1
+
       wipeUnderlay.style.opacity = "1";
       wipeOverlay.style.opacity = "1";
 
-      // Slide halves apart
-      // Use translate3d for smoother GPU compositing
+      // Slide halves apart (GPU-friendly)
       const leftX = (-120 * wp);
       const rightX = (120 * wp);
       wipeLeft.style.transform = `translate3d(${leftX}%, 0, 0)`;
       wipeRight.style.transform = `translate3d(${rightX}%, 0, 0)`;
-
-      // Optional: dim the video so the blue reads clearly
-      const dim = 1 - (0.85 * wp); // 1 -> 0.15
-      video.style.opacity = String(dim);
     }
   });
 }
 
-video.addEventListener("loadedmetadata", async () => {
-  await primeVideo();
-  setupScroll();
-});
+(async function init() {
+  // Wait for both videos to have metadata
+  await allMetadataReady([earthVideo, slashVideo]);
 
-// In case metadata is cached and loads instantly:
-if (video.readyState >= 1) {
-  (async () => {
-    await primeVideo();
-    setupScroll();
-  })();
-}
+  // Prime both videos for iOS/Safari seek behavior
+  await prime(earthVideo);
+  await prime(slashVideo);
+
+  // Ensure slash starts at 0
+  try { slashVideo.currentTime = 0; } catch (_) {}
+
+  setupScroll();
+})();

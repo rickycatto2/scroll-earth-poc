@@ -8,38 +8,68 @@
 </head>
 <body>
 
-  <!-- Scene: pinned, scroll scrubs video; at the end, PNG halves slide apart -->
-  <section class="scene" id="scene">
-    <video
-      id="earthVideo"
-      class="earthVideo"
-      muted
-      playsinline
-      preload="auto"
-    >
-      <source src="assets/earth.mp4" type="video/mp4" />
-    </video>
+  <main>
+    <!-- Pinned opening scene -->
+    <section id="scene" class="scene" aria-label="Scroll driven scene">
+      <!-- Earth video (Phase A) -->
+      <video
+        id="earthVideo"
+        class="earthVideo"
+        src="assets/earth.mp4"
+        preload="auto"
+        muted
+        playsinline
+        webkit-playsinline
+      ></video>
 
-    <!-- Underlay revealed during the wipe -->
-    <div class="wipeUnderlay" id="wipeUnderlay"></div>
+      <!-- Underlay revealed during split (Phase C) -->
+      <div id="wipeUnderlay" class="wipeUnderlay"></div>
 
-    <!-- Overlay: two PNG halves that slide apart -->
-    <div class="wipeOverlay" id="wipeOverlay" aria-hidden="true">
-      <img class="wipeHalf wipeLeft" id="wipeLeft" src="assets/page1_left.png" alt="">
-      <img class="wipeHalf wipeRight" id="wipeRight" src="assets/page1_right.png" alt="">
-    </div>
+      <!-- Slash video overlay (Phase B) -->
+      <video
+        id="slashVideo"
+        class="slashVideo"
+        src="assets/slash.mp4"
+        preload="auto"
+        muted
+        playsinline
+        webkit-playsinline
+      ></video>
 
-    <div class="hint">Scroll ↓ (we’re “moving the graphics,” not the page)</div>
-  </section>
+      <!-- Static slash PNG that stays on top after Phase B -->
+      <img
+        id="slashStatic"
+        class="slashStatic"
+        src="assets/slash_static.png"
+        alt=""
+        draggable="false"
+      />
 
-  <!-- Optional footer just so the page has a clean end -->
-  <section class="footer">
-    <p>End of demo.</p>
-  </section>
+      <!-- Split overlay (Phase C) -->
+      <div id="wipeOverlay" class="wipeOverlay" aria-hidden="true">
+        <img id="wipeLeft" class="wipeHalf wipeLeft" src="assets/page1_left.png" alt="" draggable="false" />
+        <img id="wipeRight" class="wipeHalf wipeRight" src="assets/page1_right.png" alt="" draggable="false" />
+      </div>
+    </section>
 
-  <!-- GSAP + ScrollTrigger (CDN) -->
+    <!-- Unpinned final section -->
+    <section class="final">
+      <div class="finalInner">
+        <h1>Title goes here</h1>
+        <p>
+          Body text goes here. This section is not pinned — it scrolls like a normal page after the split completes.
+        </p>
+        <p>
+          <a class="pdfLink" href="assets/brief.pdf" target="_blank" rel="noopener">Open the PDF brief</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- GSAP + ScrollTrigger via CDN -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
   <script src="main.js"></script>
 </body>
 </html>

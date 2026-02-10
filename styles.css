@@ -1,5 +1,4 @@
 * { box-sizing: border-box; }
-
 html, body {
   margin: 0;
   padding: 0;
@@ -8,37 +7,63 @@ html, body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* Scene */
+/* Pinned scene */
 .scene {
   position: relative;
   height: 100vh;
   overflow: hidden;
+  background: #0b0d12;
 }
 
-/* Video fills scene */
+/* Base earth video (Phase A) */
 .earthVideo {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  z-index: 1;
 }
 
-/* Underlay revealed when PNG halves slide away */
+/* Solid underlay revealed during split (Phase C) */
 .wipeUnderlay {
   position: absolute;
   inset: 0;
-  background: #0a4dff; /* solid blue */
+  background: #0a4dff; /* pick any nice blue */
   opacity: 0;
-  z-index: 5;
+  z-index: 2;
 }
 
-/* Overlay that holds the two halves */
+/* Slash video overlay (Phase B) */
+.slashVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;           /* turned on only during Phase B */
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* Static slash PNG that persists after Phase B */
+.slashStatic {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;    /* assumes it matches scene sizing; swap to "contain" if needed */
+  opacity: 0;           /* turned on after slash completes */
+  pointer-events: none;
+  z-index: 6;           /* above everything, including the split */
+}
+
+/* Split overlay that holds the two halves (Phase C) */
 .wipeOverlay {
   position: absolute;
   inset: 0;
-  opacity: 0;          /* turned on only during the wipe */
-  z-index: 6;
+  opacity: 0;           /* turned on only during Phase C */
+  z-index: 5;
   pointer-events: none;
 }
 
@@ -52,24 +77,41 @@ html, body {
   will-change: transform;
 }
 
-/* Scroll hint */
-.hint {
-  position: absolute;
-  left: 16px;
-  bottom: 16px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(0,0,0,0.35);
-  border: 1px solid rgba(255,255,255,0.15);
-  font-size: 13px;
-  opacity: 0.9;
-  z-index: 10;
-}
-
-/* Optional footer */
-.footer {
-  height: 40vh;
+/* Final (unpinned) section */
+.final {
+  min-height: 100vh;
   display: grid;
   place-items: center;
-  opacity: 0.7;
+  padding: 80px 20px;
+}
+
+.finalInner {
+  width: min(900px, 92vw);
+}
+
+.finalInner h1 {
+  font-size: clamp(32px, 4vw, 56px);
+  line-height: 1.05;
+  margin: 0 0 16px;
+}
+
+.finalInner p {
+  font-size: 18px;
+  line-height: 1.5;
+  margin: 0 0 18px;
+  opacity: 0.92;
+}
+
+.pdfLink {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.18);
+  text-decoration: none;
+  color: #e9eef9;
+  background: rgba(255,255,255,0.06);
+}
+
+.pdfLink:hover {
+  background: rgba(255,255,255,0.10);
 }
