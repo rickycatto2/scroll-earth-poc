@@ -7,7 +7,9 @@ html, body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* Pinned scene */
+/* -----------------------------
+   PINNED SCENE
+----------------------------- */
 .scene {
   position: relative;
   height: 100vh;
@@ -25,23 +27,28 @@ html, body {
   z-index: 1;
 }
 
-/* Underlay page (Page 2) revealed during split (Phase C) */
+/* Underlay page (Page 2) revealed during split (Phase C)
+   IMPORTANT: halves overlap each other so the diagonal seam composes correctly. */
 .revealPage {
   position: absolute;
   inset: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  opacity: 0;           /* turned on during Phase C */
+  opacity: 0;           /* enabled during Phase C */
   z-index: 2;
   pointer-events: none;
+  background: #0b0d12;  /* prevents any bleed if PNG edges aren’t perfect */
 }
 
 .revealHalf {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
+
+.revealLeft { z-index: 1; }
+.revealRight { z-index: 2; }
 
 /* Slash video overlay (Phase B) */
 .slashVideo {
@@ -50,7 +57,7 @@ html, body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0;           /* turned on only during Phase B */
+  opacity: 0;
   pointer-events: none;
   z-index: 4;
 }
@@ -61,22 +68,21 @@ html, body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;    /* use contain if your PNG isn't full-bleed */
-  opacity: 0;           /* turned on after slash completes */
+  object-fit: cover;   /* swap to contain if needed */
+  opacity: 0;
   pointer-events: none;
-  z-index: 999;         /* above everything forever */
+  z-index: 999;        /* above everything forever */
 }
 
-/* Split overlay that holds the two halves (Phase C) */
+/* Split overlay (Phase C) */
 .wipeOverlay {
   position: absolute;
   inset: 0;
-  opacity: 0;           /* turned on only during Phase C */
+  opacity: 0;
   z-index: 5;
   pointer-events: none;
 }
 
-/* Each half image covers the scene */
 .wipeHalf {
   position: absolute;
   inset: 0;
@@ -86,23 +92,26 @@ html, body {
   will-change: transform;
 }
 
-/* Unpinned page sections (2–5) */
+/* -----------------------------
+   UNPINNED PAGES (2–5)
+   IMPORTANT: halves overlap each other to form a single full image.
+----------------------------- */
 .pageSection {
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
   background: #0b0d12;
 }
 
-.pagePanel {
-  position: relative;
-  overflow: hidden;
-}
-
-.pagePanel img {
+.pageHalf {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
   user-select: none;
 }
+
+.pageLeft { z-index: 1; }
+.pageRight { z-index: 2; }

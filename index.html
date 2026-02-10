@@ -22,10 +22,10 @@
         webkit-playsinline
       ></video>
 
-      <!-- Page 2 reveal underlay (replaces the old solid blue) -->
+      <!-- Page 2 reveal underlay (behind the split). IMPORTANT: halves overlap, not grid -->
       <div id="revealPage2" class="revealPage" aria-hidden="true">
-        <img class="revealHalf" src="assets/page2_left.png" alt="" draggable="false" />
-        <img class="revealHalf" src="assets/page2_right.png" alt="" draggable="false" />
+        <img class="revealHalf revealLeft" src="assets/page2_left.png" alt="" draggable="false" />
+        <img class="revealHalf revealRight" src="assets/page2_right.png" alt="" draggable="false" />
       </div>
 
       <!-- Slash video overlay (Phase B) -->
@@ -56,41 +56,26 @@
     </section>
 
     <!-- Unpinned content sections (Pages 2–5) -->
-    <section class="pageSection" id="page2">
-      <div class="pagePanel">
-        <img src="assets/page2_left.png" alt="" draggable="false" />
-      </div>
-      <div class="pagePanel">
-        <img src="assets/page2_right.png" alt="" draggable="false" />
-      </div>
+    <section class="pageSection" id="page2" aria-label="Page 2">
+      <img class="pageHalf pageLeft" src="assets/page2_left.png" alt="" draggable="false" />
+      <img class="pageHalf pageRight" src="assets/page2_right.png" alt="" draggable="false" />
     </section>
 
-    <section class="pageSection" id="page3">
-      <div class="pagePanel">
-        <img src="assets/page3_left.png" alt="" draggable="false" />
-      </div>
-      <div class="pagePanel">
-        <img src="assets/page3_right.png" alt="" draggable="false" />
-      </div>
+    <section class="pageSection" id="page3" aria-label="Page 3">
+      <img class="pageHalf pageLeft" src="assets/page3_left.png" alt="" draggable="false" />
+      <img class="pageHalf pageRight" src="assets/page3_right.png" alt="" draggable="false" />
     </section>
 
-    <section class="pageSection" id="page4">
-      <div class="pagePanel">
-        <img src="assets/page4_left.png" alt="" draggable="false" />
-      </div>
-      <div class="pagePanel">
-        <img src="assets/page4_right.png" alt="" draggable="false" />
-      </div>
+    <section class="pageSection" id="page4" aria-label="Page 4">
+      <img class="pageHalf pageLeft" src="assets/page4_left.png" alt="" draggable="false" />
+      <img class="pageHalf pageRight" src="assets/page4_right.png" alt="" draggable="false" />
     </section>
 
-    <section class="pageSection" id="page5">
-      <div class="pagePanel">
-        <img src="assets/page5_left.png" alt="" draggable="false" />
-      </div>
-      <div class="pagePanel">
-        <img src="assets/page5_right.png" alt="" draggable="false" />
-      </div>
+    <section class="pageSection" id="page5" aria-label="Page 5">
+      <img class="pageHalf pageLeft" src="assets/page5_left.png" alt="" draggable="false" />
+      <img class="pageHalf pageRight" src="assets/page5_right.png" alt="" draggable="false" />
     </section>
+
   </main>
 
   <!-- GSAP + ScrollTrigger via CDN -->
