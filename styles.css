@@ -7,7 +7,7 @@ html, body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* Global slash overlay (enabled after Phase B, hidden once CTA is revealed) */
+/* Global slash overlay (enabled after Phase B, fades out near CTA) */
 .slashStaticGlobal {
   position: fixed;
   inset: 0;
@@ -15,7 +15,7 @@ html, body {
   height: 100%;
   object-fit: cover;     /* swap to contain if your PNG isn’t full-bleed */
   pointer-events: none;
-  opacity: 0;            /* JS turns this on after Phase B */
+  opacity: 0;            /* JS controls this */
   z-index: 9999;
 }
 
@@ -55,7 +55,7 @@ html, body {
   inset: 0;
   z-index: 5;
   pointer-events: none;
-  opacity: 0;           /* hidden until we enter split chain */
+  opacity: 0;           /* hidden until split chain starts */
 }
 
 /* Each layer fills the screen */

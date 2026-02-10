@@ -5,10 +5,10 @@ const slashVideo = document.getElementById("slashVideo");
 const layerStack = document.getElementById("layerStack");
 const slashStaticGlobal = document.getElementById("slashStaticGlobal");
 
-// Layers 1..5 only (final is revealed underneath)
+// Split layers: page0..page5 (final is revealed underneath)
 const splitLayers = Array.from(document.querySelectorAll(".layer[data-layer]"))
   .filter(el => el.getAttribute("data-layer") !== "final")
-  .sort((a, b) => Number(a.getAttribute("data-layer")) - Number(b.getAttribute("data-layer"))); // 1..5
+  .sort((a, b) => Number(a.getAttribute("data-layer")) - Number(b.getAttribute("data-layer"))); // 0..5
 
 let initialized = false;
 let earthTargetTime = 0;
@@ -26,6 +26,12 @@ async function prime(videoEl) {
 
 function clamp01(v) {
   return Math.max(0, Math.min(1, v));
+}
+
+// Smoothstep for nicer fades
+function smoothstep(t) {
+  t = clamp01(t);
+  return t * t * (3 - 2 * t);
 }
 
 function allMetadataReady(videos) {
@@ -55,20 +61,23 @@ function setupScroll() {
   if (initialized) return;
   initialized = true;
 
-  const SCROLL_LEN = 9000;
+  const SCROLL_LEN = 9800; // slightly longer since we added page0 + a hold
 
-  // A: Earth scrub, B: Slash scrub, C: Split chain (1..5)
-  const PHASE_A = 0.68;
-  const PHASE_B = 0.10;
-  // PHASE_C is the remainder
+  // Phases
+  const PHASE_A = 0.64; // earth scrub
+  const PHASE_B = 0.10; // slash scrub
+  const PHASE_H = 0.04; // HOLD on slash end ("a beat")
+  // remainder is split chain
 
   const A_END = PHASE_A;
   const B_END = PHASE_A + PHASE_B;
+  const H_END = PHASE_A + PHASE_B + PHASE_H;
 
   const SPLIT_DISTANCE = 120;
 
   resetAll();
 
+  // Smooth easing for both videos
   gsap.ticker.add(() => {
     if (earthVideo.duration) {
       earthVideo.currentTime += (earthTargetTime - earthVideo.currentTime) * 0.15;
@@ -90,7 +99,9 @@ function setupScroll() {
 
       if (!earthVideo.duration || !slashVideo.duration) return;
 
-      // Phase A
+      // -----------------------
+      // Phase A: Earth scrub
+      // -----------------------
       if (p <= A_END) {
         const vp = clamp01(p / A_END);
         earthTargetTime = earthVideo.duration * vp;
@@ -110,10 +121,12 @@ function setupScroll() {
         return;
       }
 
-      // Freeze earth
+      // Freeze earth on last frame for the rest
       earthTargetTime = Math.max(0, earthVideo.duration - 0.05);
 
-      // Phase B
+      // -----------------------
+      // Phase B: Slash scrub
+      // -----------------------
       if (p <= B_END) {
         const sp = clamp01((p - A_END) / (B_END - A_END));
 
@@ -123,6 +136,7 @@ function setupScroll() {
 
         slashTargetTime = slashVideo.duration * sp;
 
+        // Reset layers while slash plays (backscroll stays clean)
         splitLayers.forEach((layer) => {
           const left = layer.querySelector(".half.left");
           const right = layer.querySelector(".half.right");
@@ -134,14 +148,25 @@ function setupScroll() {
         return;
       }
 
-      // After Phase B: show global slash overlay (for now)
+      // From here on: slash video is locked to the end frame
       slashTargetTime = Math.max(0, slashVideo.duration - 0.05);
       slashVideo.style.opacity = "0";
 
-      // Phase C: Split chain
+      // -----------------------
+      // Phase H: HOLD ("beat") on end of slash before splits begin
+      // -----------------------
+      if (p <= H_END) {
+        layerStack.style.opacity = "0";
+        slashStaticGlobal.style.opacity = "1"; // show the slash for the beat
+        return;
+      }
+
+      // -----------------------
+      // Phase C: Split chain (Page 0 -> Page 5 -> CTA)
+      // -----------------------
       layerStack.style.opacity = "1";
 
-      const cp = clamp01((p - B_END) / (1 - B_END)); // 0..1 across split chain
+      const cp = clamp01((p - H_END) / (1 - H_END)); // 0..1 over split chain
       const perLayer = 1 / splitLayers.length;
 
       splitLayers.forEach((layer, idx) => {
@@ -156,12 +181,14 @@ function setupScroll() {
         gsap.set(right, { xPercent:  SPLIT_DISTANCE * local });
       });
 
-      // Hide slash overlay when CTA is revealed:
-      // CTA is fully revealed when the LAST split layer is ~fully open.
-      const ctaRevealThreshold = 0.98; // tweak if you want it to disappear earlier/later
-      const isCtaRevealed = cp >= ctaRevealThreshold;
+      // Fade the slash overlay out as CTA is revealed (near the end of the split chain)
+      // Start fading when the last layer is mostly open.
+      const fadeStart = 0.90;
+      const fadeEnd = 1.00;
+      const t = (cp - fadeStart) / (fadeEnd - fadeStart);
+      const fade = 1 - smoothstep(t); // 1 -> 0
 
-      slashStaticGlobal.style.opacity = isCtaRevealed ? "0" : "1";
+      slashStaticGlobal.style.opacity = String(clamp01(fade));
     }
   });
 }

@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <!-- Stays on top AFTER Phase B, until CTA reveal -->
+  <!-- Stays on top AFTER Phase B, then fades out during final reveal -->
   <img
     id="slashStaticGlobal"
     class="slashStaticGlobal"
@@ -42,7 +42,7 @@
         webkit-playsinline
       ></video>
 
-      <!-- Layer stack (Pages 1–5 + Final CTA) -->
+      <!-- Layer stack (Pages 0–5 + Final CTA) -->
       <div id="layerStack" class="layerStack" aria-hidden="true">
         <!-- FINAL CTA (bottom-most layer) -->
         <div class="layer layerFinal" data-layer="final">
@@ -79,15 +79,21 @@
           <img class="half right" src="assets/page2_right.png" alt="" draggable="false" />
         </div>
 
-        <!-- Page 1 (top-most layer) -->
+        <!-- Page 1 -->
         <div class="layer" data-layer="1">
           <img class="half left"  src="assets/page1_left.png"  alt="" draggable="false" />
           <img class="half right" src="assets/page1_right.png" alt="" draggable="false" />
         </div>
+
+        <!-- Page 0 (top-most layer) -->
+        <div class="layer" data-layer="0">
+          <img class="half left"  src="assets/page0_left.png"  alt="" draggable="false" />
+          <img class="half right" src="assets/page0_right.png" alt="" draggable="false" />
+        </div>
       </div>
     </section>
 
-    <!-- Spacer so the pin has somewhere to "end" into normal scroll -->
+    <!-- Spacer so the pin has somewhere to end into normal scroll -->
     <section class="afterExperience" aria-hidden="true"></section>
   </main>
 
