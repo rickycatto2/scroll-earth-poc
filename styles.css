@@ -7,28 +7,27 @@ html, body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* Global slash overlay */
+/* Global slash overlay (enabled after Phase B) */
 .slashStaticGlobal {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;     /* switch to contain if your slash PNG is not full-bleed */
+  object-fit: cover;     /* swap to contain if your PNG isn’t full-bleed */
   pointer-events: none;
-  opacity: 0;            /* turned on after Phase B */
+  opacity: 0;            /* JS turns this on after Phase B */
   z-index: 9999;
 }
 
-/* -----------------------------
-   PINNED OPENER (PAGE 1)
------------------------------ */
-.scene {
+/* ONE pinned experience region */
+.experience {
   position: relative;
   height: 100vh;
   overflow: hidden;
   background: #0b0d12;
 }
 
+/* Earth video (Phase A) */
 .earthVideo {
   position: absolute;
   inset: 0;
@@ -38,71 +37,35 @@ html, body {
   z-index: 1;
 }
 
-.wipeUnderlay {
-  position: absolute;
-  inset: 0;
-  background: #0a4dff;   /* placeholder underlay for opener */
-  opacity: 0;
-  z-index: 2;
-  pointer-events: none;
-}
-
+/* Slash baked video (Phase B) */
 .slashVideo {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0;
+  opacity: 0;           /* visible only during Phase B */
   pointer-events: none;
-  z-index: 4;
+  z-index: 3;
 }
 
-.wipeOverlay {
+/* Stack of page layers */
+.layerStack {
   position: absolute;
   inset: 0;
-  opacity: 0;
   z-index: 5;
   pointer-events: none;
+  opacity: 0;           /* hidden until we enter split chain */
 }
 
-.wipeHalf {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  will-change: transform;
-}
-
-/* -----------------------------
-   SPLIT SECTIONS (PAGES 2–5)
------------------------------ */
-.splitSection {
-  position: relative;
-  height: 100vh;
-  overflow: hidden;
-  background: #0b0d12;
-}
-
-/* Underlay + overlay both fill the section */
-.splitUnderlay,
-.splitOverlay {
+/* Each layer fills the screen */
+.layer {
   position: absolute;
   inset: 0;
 }
 
-.splitUnderlay {
-  z-index: 1;
-  background: #0b0d12;
-}
-
-/* overlay sits above and is the one that moves */
-.splitOverlay {
-  z-index: 2;
-}
-
-.splitHalf {
+/* The left/right masked halves overlap (NOT side-by-side) */
+.half {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -113,15 +76,15 @@ html, body {
   will-change: transform;
 }
 
-.splitHalf.left { z-index: 1; }
-.splitHalf.right { z-index: 2; }
+.half.left { z-index: 1; }
+.half.right { z-index: 2; }
 
-/* Final underlay content */
-.finalUnderlay {
+/* Final CTA layer (bottom) */
+.layerFinal {
   display: grid;
   place-items: center;
-  padding: 80px 20px;
   background: #0b0d12;
+  padding: 80px 20px;
 }
 
 .finalInner {
@@ -155,6 +118,8 @@ html, body {
   background: rgba(255,255,255,0.10);
 }
 
-.afterFinal {
-  height: 60vh;
+/* Extra scroll space after pin */
+.afterExperience {
+  height: 80vh;
+  background: #0b0d12;
 }

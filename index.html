@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <!-- Global slash overlay that stays on top AFTER Phase B -->
+  <!-- Stays on top AFTER Phase B -->
   <img
     id="slashStaticGlobal"
     class="slashStaticGlobal"
@@ -18,8 +18,9 @@
   />
 
   <main>
-    <!-- Pinned opening scene -->
-    <section id="scene" class="scene" aria-label="Scroll driven scene">
+    <!-- ONE pinned experience -->
+    <section id="experience" class="experience" aria-label="Scroll driven experience">
+      <!-- Background video (Phase A) -->
       <video
         id="earthVideo"
         class="earthVideo"
@@ -30,11 +31,7 @@
         webkit-playsinline
       ></video>
 
-      <!-- (Optional) if you still want page2 underlay visible during page1 split:
-           We can keep it, but once pages 2+ are split-scenes, it's nicer to reveal page2 as a section below.
-           So for now: keep the opener split revealing a solid color. -->
-      <div id="wipeUnderlay" class="wipeUnderlay" aria-hidden="true"></div>
-
+      <!-- Slash baked video (Phase B) -->
       <video
         id="slashVideo"
         class="slashVideo"
@@ -45,70 +42,59 @@
         webkit-playsinline
       ></video>
 
-      <!-- Split overlay for Page 1 -->
-      <div id="wipeOverlay" class="wipeOverlay" aria-hidden="true">
-        <img id="wipeLeft" class="wipeHalf wipeLeft" src="assets/page1_left.png" alt="" draggable="false" />
-        <img id="wipeRight" class="wipeHalf wipeRight" src="assets/page1_right.png" alt="" draggable="false" />
-      </div>
-    </section>
+      <!-- Layer stack (Pages 1–5 + Final CTA) -->
+      <div id="layerStack" class="layerStack" aria-hidden="true">
+        <!-- FINAL CTA (bottom-most layer) -->
+        <div class="layer layerFinal" data-layer="final">
+          <div class="finalInner">
+            <h1>Call to Action</h1>
+            <p>This is the final page revealed after Page 5 splits.</p>
+            <p>
+              <a class="pdfLink" href="assets/brief.pdf" target="_blank" rel="noopener">Open the PDF brief</a>
+            </p>
+          </div>
+        </div>
 
-    <!-- Page 2 split-scene (reveals Page 3) -->
-    <section class="splitSection" id="page2" aria-label="Page 2">
-      <div class="splitUnderlay" aria-hidden="true">
-        <img class="splitHalf left" src="assets/page3_left.png" alt="" draggable="false" />
-        <img class="splitHalf right" src="assets/page3_right.png" alt="" draggable="false" />
-      </div>
-      <div class="splitOverlay">
-        <img class="splitHalf left" src="assets/page2_left.png" alt="" draggable="false" />
-        <img class="splitHalf right" src="assets/page2_right.png" alt="" draggable="false" />
-      </div>
-    </section>
+        <!-- Page 5 -->
+        <div class="layer" data-layer="5">
+          <img class="half left"  src="assets/page5_left.png"  alt="" draggable="false" />
+          <img class="half right" src="assets/page5_right.png" alt="" draggable="false" />
+        </div>
 
-    <!-- Page 3 split-scene (reveals Page 4) -->
-    <section class="splitSection" id="page3" aria-label="Page 3">
-      <div class="splitUnderlay" aria-hidden="true">
-        <img class="splitHalf left" src="assets/page4_left.png" alt="" draggable="false" />
-        <img class="splitHalf right" src="assets/page4_right.png" alt="" draggable="false" />
-      </div>
-      <div class="splitOverlay">
-        <img class="splitHalf left" src="assets/page3_left.png" alt="" draggable="false" />
-        <img class="splitHalf right" src="assets/page3_right.png" alt="" draggable="false" />
-      </div>
-    </section>
+        <!-- Page 4 -->
+        <div class="layer" data-layer="4">
+          <img class="half left"  src="assets/page4_left.png"  alt="" draggable="false" />
+          <img class="half right" src="assets/page4_right.png" alt="" draggable="false" />
+        </div>
 
-    <!-- Page 4 split-scene (reveals Page 5) -->
-    <section class="splitSection" id="page4" aria-label="Page 4">
-      <div class="splitUnderlay" aria-hidden="true">
-        <img class="splitHalf left" src="assets/page5_left.png" alt="" draggable="false" />
-        <img class="splitHalf right" src="assets/page5_right.png" alt="" draggable="false" />
-      </div>
-      <div class="splitOverlay">
-        <img class="splitHalf left" src="assets/page4_left.png" alt="" draggable="false" />
-        <img class="splitHalf right" src="assets/page4_right.png" alt="" draggable="false" />
-      </div>
-    </section>
+        <!-- Page 3 -->
+        <div class="layer" data-layer="3">
+          <img class="half left"  src="assets/page3_left.png"  alt="" draggable="false" />
+          <img class="half right" src="assets/page3_right.png" alt="" draggable="false" />
+        </div>
 
-    <!-- Page 5 split-scene (reveals Final content) -->
-    <section class="splitSection" id="page5" aria-label="Page 5">
-      <div class="splitUnderlay finalUnderlay">
-        <div class="finalInner">
-          <h1>Title goes here</h1>
-          <p>Body text goes here. This is the final reveal under Page 5.</p>
-          <p><a class="pdfLink" href="assets/brief.pdf" target="_blank" rel="noopener">Open the PDF brief</a></p>
+        <!-- Page 2 -->
+        <div class="layer" data-layer="2">
+          <img class="half left"  src="assets/page2_left.png"  alt="" draggable="false" />
+          <img class="half right" src="assets/page2_right.png" alt="" draggable="false" />
+        </div>
+
+        <!-- Page 1 (top-most layer) -->
+        <div class="layer" data-layer="1">
+          <img class="half left"  src="assets/page1_left.png"  alt="" draggable="false" />
+          <img class="half right" src="assets/page1_right.png" alt="" draggable="false" />
         </div>
       </div>
-      <div class="splitOverlay">
-        <img class="splitHalf left" src="assets/page5_left.png" alt="" draggable="false" />
-        <img class="splitHalf right" src="assets/page5_right.png" alt="" draggable="false" />
-      </div>
     </section>
 
-    <!-- A little extra scroll space after final reveal -->
-    <section class="afterFinal" aria-hidden="true"></section>
+    <!-- Spacer so the pin has somewhere to "end" into normal scroll -->
+    <section class="afterExperience" aria-hidden="true"></section>
   </main>
 
+  <!-- GSAP + ScrollTrigger via CDN -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
   <script src="main.js"></script>
 </body>
 </html>
