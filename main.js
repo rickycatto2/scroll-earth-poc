@@ -3,19 +3,17 @@ gsap.registerPlugin(ScrollTrigger);
 const earthVideo = document.getElementById("earthVideo");
 const slashVideo = document.getElementById("slashVideo");
 
-const revealPage2 = document.getElementById("revealPage2");
-
+const wipeUnderlay = document.getElementById("wipeUnderlay");
 const wipeOverlay = document.getElementById("wipeOverlay");
 const wipeLeft = document.getElementById("wipeLeft");
 const wipeRight = document.getElementById("wipeRight");
 
-const slashStatic = document.getElementById("slashStatic");
+const slashStaticGlobal = document.getElementById("slashStaticGlobal");
 
 let initialized = false;
 let earthTargetTime = 0;
 let slashTargetTime = 0;
 
-// iOS/Safari: "prime" videos so currentTime seeking works reliably.
 async function prime(videoEl) {
   try {
     videoEl.muted = true;
@@ -39,27 +37,23 @@ function allMetadataReady(videos) {
   );
 }
 
-function resetVisuals() {
+function resetOpenerVisuals() {
   gsap.set(earthVideo, { opacity: 1 });
   gsap.set(slashVideo, { opacity: 0 });
+  gsap.set(slashStaticGlobal, { opacity: 0 });
 
-  gsap.set(slashStatic, { opacity: 0 });
-
-  gsap.set(revealPage2, { opacity: 0 });
-  gsap.set(wipeOverlay, { opacity: 0 });
-
+  gsap.set([wipeUnderlay, wipeOverlay], { opacity: 0 });
   wipeLeft.style.transform = "translate3d(0%,0,0)";
   wipeRight.style.transform = "translate3d(0%,0,0)";
 }
 
-function setupScroll() {
+function setupOpenerScroll() {
   if (initialized) return;
   initialized = true;
 
-  // Tune to taste
   const SCROLL_LEN = 4800;
 
-  // Explicit phases (sum to 1.0)
+  // Opener phases
   const PHASE_A = 0.76; // earth scrub
   const PHASE_B = 0.10; // slash scrub
   const PHASE_C = 0.14; // split
@@ -67,9 +61,9 @@ function setupScroll() {
   const A_END = PHASE_A;
   const B_END = PHASE_A + PHASE_B;
 
-  resetVisuals();
+  resetOpenerVisuals();
 
-  // Smooth easing for both videos (reduces stepping during scrubbing)
+  // Smooth easing for both videos
   gsap.ticker.add(() => {
     if (earthVideo.duration) {
       earthVideo.currentTime += (earthTargetTime - earthVideo.currentTime) * 0.15;
@@ -91,62 +85,46 @@ function setupScroll() {
 
       if (!earthVideo.duration || !slashVideo.duration) return;
 
-      // -----------------------
-      // Phase A: Earth scrub
-      // -----------------------
+      // Phase A: earth scrub
       if (p <= A_END) {
         const vp = clamp01(p / A_END);
-
         earthTargetTime = earthVideo.duration * vp;
 
         slashVideo.style.opacity = "0";
-        slashStatic.style.opacity = "0";
-
-        revealPage2.style.opacity = "0";
+        wipeUnderlay.style.opacity = "0";
         wipeOverlay.style.opacity = "0";
+        slashStaticGlobal.style.opacity = "0";
+
         wipeLeft.style.transform = "translate3d(0%,0,0)";
         wipeRight.style.transform = "translate3d(0%,0,0)";
-
-        earthVideo.style.opacity = "1";
         return;
       }
 
-      // Freeze earth on last frame
+      // Freeze earth
       earthTargetTime = Math.max(0, earthVideo.duration - 0.05);
-      earthVideo.style.opacity = "1";
 
-      // -----------------------
-      // Phase B: Slash video scrub
-      // -----------------------
+      // Phase B: slash scrub
       if (p <= B_END) {
         const sp = clamp01((p - A_END) / (B_END - A_END));
 
         slashVideo.style.opacity = "1";
-        slashStatic.style.opacity = "0";
+        slashStaticGlobal.style.opacity = "0";
 
-        revealPage2.style.opacity = "0";
+        wipeUnderlay.style.opacity = "0";
         wipeOverlay.style.opacity = "0";
-        wipeLeft.style.transform = "translate3d(0%,0,0)";
-        wipeRight.style.transform = "translate3d(0%,0,0)";
 
         slashTargetTime = slashVideo.duration * sp;
         return;
       }
 
-      // After Phase B completes:
-      // - lock slash video to end
-      // - hide slash video
-      // - show the static slash PNG forever
+      // After Phase B: lock slash video & enable global slash overlay forever
       slashTargetTime = Math.max(0, slashVideo.duration - 0.05);
       slashVideo.style.opacity = "0";
-      slashStatic.style.opacity = "1";
+      slashStaticGlobal.style.opacity = "1";
 
-      // -----------------------
-      // Phase C: Split wipe reveals Page 2 behind
-      // -----------------------
+      // Phase C: split opener (reveals solid underlay)
       const wp = clamp01((p - B_END) / (1 - B_END));
-
-      revealPage2.style.opacity = "1";
+      wipeUnderlay.style.opacity = "1";
       wipeOverlay.style.opacity = "1";
 
       const leftX = (-120 * wp);
@@ -157,13 +135,43 @@ function setupScroll() {
   });
 }
 
+function setupSplitSections() {
+  // Each splitSection pins and scrubs its overlay halves apart
+  document.querySelectorAll(".splitSection").forEach((section) => {
+    const overlay = section.querySelector(".splitOverlay");
+    if (!overlay) return;
+
+    const left = overlay.querySelector(".splitHalf.left");
+    const right = overlay.querySelector(".splitHalf.right");
+    if (!left || !right) return;
+
+    // Reset positions
+    gsap.set(left, { xPercent: 0 });
+    gsap.set(right, { xPercent: 0 });
+
+    ScrollTrigger.create({
+      trigger: section,
+      start: "top top",
+      end: "+=140%",      // how long the split takes; tune this
+      scrub: true,
+      pin: true,
+      anticipatePin: 1,
+      onUpdate: (self) => {
+        const p = self.progress; // 0..1
+        gsap.set(left, { xPercent: -120 * p });
+        gsap.set(right, { xPercent: 120 * p });
+      }
+    });
+  });
+}
+
 (async function init() {
   await allMetadataReady([earthVideo, slashVideo]);
-
   await prime(earthVideo);
   await prime(slashVideo);
 
   try { slashVideo.currentTime = 0; } catch (_) {}
 
-  setupScroll();
+  setupOpenerScroll();
+  setupSplitSections();
 })();

@@ -7,8 +7,20 @@ html, body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
+/* Global slash overlay */
+.slashStaticGlobal {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;     /* switch to contain if your slash PNG is not full-bleed */
+  pointer-events: none;
+  opacity: 0;            /* turned on after Phase B */
+  z-index: 9999;
+}
+
 /* -----------------------------
-   PINNED SCENE
+   PINNED OPENER (PAGE 1)
 ----------------------------- */
 .scene {
   position: relative;
@@ -17,7 +29,6 @@ html, body {
   background: #0b0d12;
 }
 
-/* Base earth video (Phase A) */
 .earthVideo {
   position: absolute;
   inset: 0;
@@ -27,30 +38,15 @@ html, body {
   z-index: 1;
 }
 
-/* Underlay page (Page 2) revealed during split (Phase C)
-   IMPORTANT: halves overlap each other so the diagonal seam composes correctly. */
-.revealPage {
+.wipeUnderlay {
   position: absolute;
   inset: 0;
-  opacity: 0;           /* enabled during Phase C */
+  background: #0a4dff;   /* placeholder underlay for opener */
+  opacity: 0;
   z-index: 2;
   pointer-events: none;
-  background: #0b0d12;  /* prevents any bleed if PNG edges aren’t perfect */
 }
 
-.revealHalf {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.revealLeft { z-index: 1; }
-.revealRight { z-index: 2; }
-
-/* Slash video overlay (Phase B) */
 .slashVideo {
   position: absolute;
   inset: 0;
@@ -62,19 +58,6 @@ html, body {
   z-index: 4;
 }
 
-/* Static slash PNG that persists after Phase B */
-.slashStatic {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;   /* swap to contain if needed */
-  opacity: 0;
-  pointer-events: none;
-  z-index: 999;        /* above everything forever */
-}
-
-/* Split overlay (Phase C) */
 .wipeOverlay {
   position: absolute;
   inset: 0;
@@ -93,17 +76,33 @@ html, body {
 }
 
 /* -----------------------------
-   UNPINNED PAGES (2–5)
-   IMPORTANT: halves overlap each other to form a single full image.
+   SPLIT SECTIONS (PAGES 2–5)
 ----------------------------- */
-.pageSection {
+.splitSection {
   position: relative;
   height: 100vh;
   overflow: hidden;
   background: #0b0d12;
 }
 
-.pageHalf {
+/* Underlay + overlay both fill the section */
+.splitUnderlay,
+.splitOverlay {
+  position: absolute;
+  inset: 0;
+}
+
+.splitUnderlay {
+  z-index: 1;
+  background: #0b0d12;
+}
+
+/* overlay sits above and is the one that moves */
+.splitOverlay {
+  z-index: 2;
+}
+
+.splitHalf {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -111,7 +110,51 @@ html, body {
   object-fit: cover;
   display: block;
   user-select: none;
+  will-change: transform;
 }
 
-.pageLeft { z-index: 1; }
-.pageRight { z-index: 2; }
+.splitHalf.left { z-index: 1; }
+.splitHalf.right { z-index: 2; }
+
+/* Final underlay content */
+.finalUnderlay {
+  display: grid;
+  place-items: center;
+  padding: 80px 20px;
+  background: #0b0d12;
+}
+
+.finalInner {
+  width: min(900px, 92vw);
+}
+
+.finalInner h1 {
+  font-size: clamp(32px, 4vw, 56px);
+  line-height: 1.05;
+  margin: 0 0 16px;
+}
+
+.finalInner p {
+  font-size: 18px;
+  line-height: 1.5;
+  margin: 0 0 18px;
+  opacity: 0.92;
+}
+
+.pdfLink {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.18);
+  text-decoration: none;
+  color: #e9eef9;
+  background: rgba(255,255,255,0.06);
+}
+
+.pdfLink:hover {
+  background: rgba(255,255,255,0.10);
+}
+
+.afterFinal {
+  height: 60vh;
+}

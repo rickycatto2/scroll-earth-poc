@@ -8,10 +8,18 @@
 </head>
 <body>
 
+  <!-- Global slash overlay that stays on top AFTER Phase B -->
+  <img
+    id="slashStaticGlobal"
+    class="slashStaticGlobal"
+    src="assets/slash_static.png"
+    alt=""
+    draggable="false"
+  />
+
   <main>
     <!-- Pinned opening scene -->
     <section id="scene" class="scene" aria-label="Scroll driven scene">
-      <!-- Earth video (Phase A) -->
       <video
         id="earthVideo"
         class="earthVideo"
@@ -22,13 +30,11 @@
         webkit-playsinline
       ></video>
 
-      <!-- Page 2 reveal underlay (behind the split). IMPORTANT: halves overlap, not grid -->
-      <div id="revealPage2" class="revealPage" aria-hidden="true">
-        <img class="revealHalf revealLeft" src="assets/page2_left.png" alt="" draggable="false" />
-        <img class="revealHalf revealRight" src="assets/page2_right.png" alt="" draggable="false" />
-      </div>
+      <!-- (Optional) if you still want page2 underlay visible during page1 split:
+           We can keep it, but once pages 2+ are split-scenes, it's nicer to reveal page2 as a section below.
+           So for now: keep the opener split revealing a solid color. -->
+      <div id="wipeUnderlay" class="wipeUnderlay" aria-hidden="true"></div>
 
-      <!-- Slash video overlay (Phase B) -->
       <video
         id="slashVideo"
         class="slashVideo"
@@ -39,49 +45,70 @@
         webkit-playsinline
       ></video>
 
-      <!-- Static slash PNG that stays on top after Phase B -->
-      <img
-        id="slashStatic"
-        class="slashStatic"
-        src="assets/slash_static.png"
-        alt=""
-        draggable="false"
-      />
-
-      <!-- Split overlay (Phase C) -->
+      <!-- Split overlay for Page 1 -->
       <div id="wipeOverlay" class="wipeOverlay" aria-hidden="true">
         <img id="wipeLeft" class="wipeHalf wipeLeft" src="assets/page1_left.png" alt="" draggable="false" />
         <img id="wipeRight" class="wipeHalf wipeRight" src="assets/page1_right.png" alt="" draggable="false" />
       </div>
     </section>
 
-    <!-- Unpinned content sections (Pages 2–5) -->
-    <section class="pageSection" id="page2" aria-label="Page 2">
-      <img class="pageHalf pageLeft" src="assets/page2_left.png" alt="" draggable="false" />
-      <img class="pageHalf pageRight" src="assets/page2_right.png" alt="" draggable="false" />
+    <!-- Page 2 split-scene (reveals Page 3) -->
+    <section class="splitSection" id="page2" aria-label="Page 2">
+      <div class="splitUnderlay" aria-hidden="true">
+        <img class="splitHalf left" src="assets/page3_left.png" alt="" draggable="false" />
+        <img class="splitHalf right" src="assets/page3_right.png" alt="" draggable="false" />
+      </div>
+      <div class="splitOverlay">
+        <img class="splitHalf left" src="assets/page2_left.png" alt="" draggable="false" />
+        <img class="splitHalf right" src="assets/page2_right.png" alt="" draggable="false" />
+      </div>
     </section>
 
-    <section class="pageSection" id="page3" aria-label="Page 3">
-      <img class="pageHalf pageLeft" src="assets/page3_left.png" alt="" draggable="false" />
-      <img class="pageHalf pageRight" src="assets/page3_right.png" alt="" draggable="false" />
+    <!-- Page 3 split-scene (reveals Page 4) -->
+    <section class="splitSection" id="page3" aria-label="Page 3">
+      <div class="splitUnderlay" aria-hidden="true">
+        <img class="splitHalf left" src="assets/page4_left.png" alt="" draggable="false" />
+        <img class="splitHalf right" src="assets/page4_right.png" alt="" draggable="false" />
+      </div>
+      <div class="splitOverlay">
+        <img class="splitHalf left" src="assets/page3_left.png" alt="" draggable="false" />
+        <img class="splitHalf right" src="assets/page3_right.png" alt="" draggable="false" />
+      </div>
     </section>
 
-    <section class="pageSection" id="page4" aria-label="Page 4">
-      <img class="pageHalf pageLeft" src="assets/page4_left.png" alt="" draggable="false" />
-      <img class="pageHalf pageRight" src="assets/page4_right.png" alt="" draggable="false" />
+    <!-- Page 4 split-scene (reveals Page 5) -->
+    <section class="splitSection" id="page4" aria-label="Page 4">
+      <div class="splitUnderlay" aria-hidden="true">
+        <img class="splitHalf left" src="assets/page5_left.png" alt="" draggable="false" />
+        <img class="splitHalf right" src="assets/page5_right.png" alt="" draggable="false" />
+      </div>
+      <div class="splitOverlay">
+        <img class="splitHalf left" src="assets/page4_left.png" alt="" draggable="false" />
+        <img class="splitHalf right" src="assets/page4_right.png" alt="" draggable="false" />
+      </div>
     </section>
 
-    <section class="pageSection" id="page5" aria-label="Page 5">
-      <img class="pageHalf pageLeft" src="assets/page5_left.png" alt="" draggable="false" />
-      <img class="pageHalf pageRight" src="assets/page5_right.png" alt="" draggable="false" />
+    <!-- Page 5 split-scene (reveals Final content) -->
+    <section class="splitSection" id="page5" aria-label="Page 5">
+      <div class="splitUnderlay finalUnderlay">
+        <div class="finalInner">
+          <h1>Title goes here</h1>
+          <p>Body text goes here. This is the final reveal under Page 5.</p>
+          <p><a class="pdfLink" href="assets/brief.pdf" target="_blank" rel="noopener">Open the PDF brief</a></p>
+        </div>
+      </div>
+      <div class="splitOverlay">
+        <img class="splitHalf left" src="assets/page5_left.png" alt="" draggable="false" />
+        <img class="splitHalf right" src="assets/page5_right.png" alt="" draggable="false" />
+      </div>
     </section>
 
+    <!-- A little extra scroll space after final reveal -->
+    <section class="afterFinal" aria-hidden="true"></section>
   </main>
 
-  <!-- GSAP + ScrollTrigger via CDN -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-
   <script src="main.js"></script>
 </body>
 </html>
