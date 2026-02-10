@@ -25,13 +25,22 @@ html, body {
   z-index: 1;
 }
 
-/* Solid underlay revealed during split (Phase C) */
-.wipeUnderlay {
+/* Underlay page (Page 2) revealed during split (Phase C) */
+.revealPage {
   position: absolute;
   inset: 0;
-  background: #0a4dff; /* pick any nice blue */
-  opacity: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  opacity: 0;           /* turned on during Phase C */
   z-index: 2;
+  pointer-events: none;
+}
+
+.revealHalf {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 /* Slash video overlay (Phase B) */
@@ -52,10 +61,10 @@ html, body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;    /* assumes it matches scene sizing; swap to "contain" if needed */
+  object-fit: cover;    /* use contain if your PNG isn't full-bleed */
   opacity: 0;           /* turned on after slash completes */
   pointer-events: none;
-  z-index: 6;           /* above everything, including the split */
+  z-index: 999;         /* above everything forever */
 }
 
 /* Split overlay that holds the two halves (Phase C) */
@@ -77,41 +86,23 @@ html, body {
   will-change: transform;
 }
 
-/* Final (unpinned) section */
-.final {
+/* Unpinned page sections (2–5) */
+.pageSection {
   min-height: 100vh;
   display: grid;
-  place-items: center;
-  padding: 80px 20px;
+  grid-template-columns: 1fr 1fr;
+  background: #0b0d12;
 }
 
-.finalInner {
-  width: min(900px, 92vw);
+.pagePanel {
+  position: relative;
+  overflow: hidden;
 }
 
-.finalInner h1 {
-  font-size: clamp(32px, 4vw, 56px);
-  line-height: 1.05;
-  margin: 0 0 16px;
-}
-
-.finalInner p {
-  font-size: 18px;
-  line-height: 1.5;
-  margin: 0 0 18px;
-  opacity: 0.92;
-}
-
-.pdfLink {
-  display: inline-block;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.18);
-  text-decoration: none;
-  color: #e9eef9;
-  background: rgba(255,255,255,0.06);
-}
-
-.pdfLink:hover {
-  background: rgba(255,255,255,0.10);
+.pagePanel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  user-select: none;
 }

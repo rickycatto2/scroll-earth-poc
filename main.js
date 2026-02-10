@@ -3,7 +3,8 @@ gsap.registerPlugin(ScrollTrigger);
 const earthVideo = document.getElementById("earthVideo");
 const slashVideo = document.getElementById("slashVideo");
 
-const wipeUnderlay = document.getElementById("wipeUnderlay");
+const revealPage2 = document.getElementById("revealPage2");
+
 const wipeOverlay = document.getElementById("wipeOverlay");
 const wipeLeft = document.getElementById("wipeLeft");
 const wipeRight = document.getElementById("wipeRight");
@@ -21,7 +22,6 @@ async function prime(videoEl) {
     await videoEl.play();
     videoEl.pause();
   } catch (e) {
-    // Fine for POC: user gesture may be required on some devices.
     console.warn("Video prime blocked (ok for POC):", e);
   }
 }
@@ -40,15 +40,14 @@ function allMetadataReady(videos) {
 }
 
 function resetVisuals() {
-  // Video visibility
   gsap.set(earthVideo, { opacity: 1 });
   gsap.set(slashVideo, { opacity: 0 });
 
-  // Slash static overlay off by default
   gsap.set(slashStatic, { opacity: 0 });
 
-  // Wipe off by default
-  gsap.set([wipeUnderlay, wipeOverlay], { opacity: 0 });
+  gsap.set(revealPage2, { opacity: 0 });
+  gsap.set(wipeOverlay, { opacity: 0 });
+
   wipeLeft.style.transform = "translate3d(0%,0,0)";
   wipeRight.style.transform = "translate3d(0%,0,0)";
 }
@@ -57,7 +56,7 @@ function setupScroll() {
   if (initialized) return;
   initialized = true;
 
-  // Tune this to taste
+  // Tune to taste
   const SCROLL_LEN = 4800;
 
   // Explicit phases (sum to 1.0)
@@ -88,9 +87,8 @@ function setupScroll() {
     pin: true,
     anticipatePin: 1,
     onUpdate: (self) => {
-      const p = self.progress; // 0..1
+      const p = self.progress;
 
-      // Guard: durations might be 0 briefly
       if (!earthVideo.duration || !slashVideo.duration) return;
 
       // -----------------------
@@ -99,13 +97,12 @@ function setupScroll() {
       if (p <= A_END) {
         const vp = clamp01(p / A_END);
 
-        // Scrub earth 0 -> end
         earthTargetTime = earthVideo.duration * vp;
 
-        // Keep everything else off
         slashVideo.style.opacity = "0";
         slashStatic.style.opacity = "0";
-        wipeUnderlay.style.opacity = "0";
+
+        revealPage2.style.opacity = "0";
         wipeOverlay.style.opacity = "0";
         wipeLeft.style.transform = "translate3d(0%,0,0)";
         wipeRight.style.transform = "translate3d(0%,0,0)";
@@ -114,7 +111,7 @@ function setupScroll() {
         return;
       }
 
-      // Freeze earth on last frame for remaining phases
+      // Freeze earth on last frame
       earthTargetTime = Math.max(0, earthVideo.duration - 0.05);
       earthVideo.style.opacity = "1";
 
@@ -124,38 +121,34 @@ function setupScroll() {
       if (p <= B_END) {
         const sp = clamp01((p - A_END) / (B_END - A_END));
 
-        // Show slash video, hide static slash (until complete)
         slashVideo.style.opacity = "1";
         slashStatic.style.opacity = "0";
 
-        // Keep wipe off
-        wipeUnderlay.style.opacity = "0";
+        revealPage2.style.opacity = "0";
         wipeOverlay.style.opacity = "0";
         wipeLeft.style.transform = "translate3d(0%,0,0)";
         wipeRight.style.transform = "translate3d(0%,0,0)";
 
-        // Scrub slash 0 -> end
         slashTargetTime = slashVideo.duration * sp;
         return;
       }
 
-      // Once Phase B is complete:
-      // - Lock slash video to its end (so it doesn't jump if the browser hiccups)
-      // - Hide slash video
-      // - Show the static transparent slash PNG for all remaining phases
+      // After Phase B completes:
+      // - lock slash video to end
+      // - hide slash video
+      // - show the static slash PNG forever
       slashTargetTime = Math.max(0, slashVideo.duration - 0.05);
       slashVideo.style.opacity = "0";
       slashStatic.style.opacity = "1";
 
       // -----------------------
-      // Phase C: Split wipe
+      // Phase C: Split wipe reveals Page 2 behind
       // -----------------------
-      const wp = clamp01((p - B_END) / (1 - B_END)); // 0..1
+      const wp = clamp01((p - B_END) / (1 - B_END));
 
-      wipeUnderlay.style.opacity = "1";
+      revealPage2.style.opacity = "1";
       wipeOverlay.style.opacity = "1";
 
-      // Slide halves apart (GPU-friendly)
       const leftX = (-120 * wp);
       const rightX = (120 * wp);
       wipeLeft.style.transform = `translate3d(${leftX}%, 0, 0)`;
@@ -165,14 +158,11 @@ function setupScroll() {
 }
 
 (async function init() {
-  // Wait for both videos to have metadata
   await allMetadataReady([earthVideo, slashVideo]);
 
-  // Prime both videos for iOS/Safari seek behavior
   await prime(earthVideo);
   await prime(slashVideo);
 
-  // Ensure slash starts at 0
   try { slashVideo.currentTime = 0; } catch (_) {}
 
   setupScroll();

@@ -22,8 +22,11 @@
         webkit-playsinline
       ></video>
 
-      <!-- Underlay revealed during split (Phase C) -->
-      <div id="wipeUnderlay" class="wipeUnderlay"></div>
+      <!-- Page 2 reveal underlay (replaces the old solid blue) -->
+      <div id="revealPage2" class="revealPage" aria-hidden="true">
+        <img class="revealHalf" src="assets/page2_left.png" alt="" draggable="false" />
+        <img class="revealHalf" src="assets/page2_right.png" alt="" draggable="false" />
+      </div>
 
       <!-- Slash video overlay (Phase B) -->
       <video
@@ -52,16 +55,40 @@
       </div>
     </section>
 
-    <!-- Unpinned final section -->
-    <section class="final">
-      <div class="finalInner">
-        <h1>Title goes here</h1>
-        <p>
-          Body text goes here. This section is not pinned — it scrolls like a normal page after the split completes.
-        </p>
-        <p>
-          <a class="pdfLink" href="assets/brief.pdf" target="_blank" rel="noopener">Open the PDF brief</a>
-        </p>
+    <!-- Unpinned content sections (Pages 2–5) -->
+    <section class="pageSection" id="page2">
+      <div class="pagePanel">
+        <img src="assets/page2_left.png" alt="" draggable="false" />
+      </div>
+      <div class="pagePanel">
+        <img src="assets/page2_right.png" alt="" draggable="false" />
+      </div>
+    </section>
+
+    <section class="pageSection" id="page3">
+      <div class="pagePanel">
+        <img src="assets/page3_left.png" alt="" draggable="false" />
+      </div>
+      <div class="pagePanel">
+        <img src="assets/page3_right.png" alt="" draggable="false" />
+      </div>
+    </section>
+
+    <section class="pageSection" id="page4">
+      <div class="pagePanel">
+        <img src="assets/page4_left.png" alt="" draggable="false" />
+      </div>
+      <div class="pagePanel">
+        <img src="assets/page4_right.png" alt="" draggable="false" />
+      </div>
+    </section>
+
+    <section class="pageSection" id="page5">
+      <div class="pagePanel">
+        <img src="assets/page5_left.png" alt="" draggable="false" />
+      </div>
+      <div class="pagePanel">
+        <img src="assets/page5_right.png" alt="" draggable="false" />
       </div>
     </section>
   </main>
